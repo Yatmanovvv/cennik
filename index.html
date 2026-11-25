@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Мета-теги для упаковки в Android APK и полноэкранного режима -->
+    <meta name="theme-color" content="#111827">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Ценник 30%">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23111827'/%3E%3Cpath d='M18 18h14l16 16-14 14-16-16V18zm8 8a3 3 0 100 6 3 3 0 000-6z' fill='white'/%3E%3C/svg%3E">
+    <title>Генератор ценников — Остаток мерного товара</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* =========================================================
+           СОВРЕМЕННЫЙ ЧЁРНО-БЕЛЫЙ ДИЗАЙН ЦЕННИКА ДЛЯ ЧБ-ПЕЧАТИ
+           ========================================================= */
+        .price-tag-card {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #ffffff;
+            color: #000000;
+            border: 2.5px solid #000000;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tag-header-bar {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .tag-discount-pill {
+            background: #ffffff;
+            color: #000000;
+            border: 2px solid #000000;
+        }
+
+        .tag-price-hero {
+            background: #ececec;
+            border: 2.5px solid #000000;
+        }
+
+        .tag-pin-box {
+            border: 1.5px dashed #000000;
+            background: #ffffff;
+        }
+
+        .tag-footer-bar {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Анимация пульсации активного микрофона */
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .mic-listening {
+            animation: pulse-ring 1.3s infinite;
+            background-color: #ef4444 !important;
+            border-color: #dc2626 !important;
+            color: #ffffff !important;
+        }
+
+        /* Правила печати: строго 4 ценника (2×2) на один лист А4 */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 7mm;
+            }
+            html, body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            #print-area {
+                display: block !important;
+                width: 100% !important;
+            }
+            .print-page {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 5mm !important;
+                page-break-after: always;
+                break-after: page;
+            }
+            .print-page:last-child {
+                page-break-after: auto;
+                break-after: auto;
+            }
+            .price-tag-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                max-height: 136mm;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .price-tag-card * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.sticky{position:sticky}.inset-0{inset:0px}.right-4{right:1rem}.top-4{top:1rem}.top-0{top:0px}.z-50{z-index:50}.z-30{z-index:30}.col-span-5{grid-column:span 5 / span 5}.col-span-7{grid-column:span 7 / span 7}.mx-auto{margin-left:auto;margin-right:auto}.mb-1\.5{margin-bottom:0.375rem}.ml-0\.5{margin-left:0.125rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mt-1{margin-top:0.25rem}.mt-1\.5{margin-top:0.375rem}.mb-1{margin-bottom:0.25rem}.mt-0\.5{margin-top:0.125rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-2\.5{height:0.625rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-11{height:2.75rem}.h-12{height:3rem}.h-9{height:2.25rem}.max-h-56{max-height:14rem}.max-h-\[88vh\]{max-height:88vh}.min-h-screen{min-height:100vh}.min-h-\[22px\]{min-height:22px}.w-full{width:100%}.w-10{width:2.5rem}.w-2\.5{width:0.625rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-11{width:2.75rem}.w-12{width:3rem}.min-w-0{min-width:0px}.max-w-xs{max-width:20rem}.max-w-6xl{max-width:72rem}.max-w-2xl{max-width:42rem}.max-w-md{max-width:28rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;user-select:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.items-stretch{align-items:stretch}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-1\.5{gap:0.375rem}.gap-2\.5{gap:0.625rem}.gap-3{gap:0.75rem}.gap-6{gap:1.5rem}.gap-1{gap:0.25rem}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.375rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.divide-x > :not([hidden]) ~ :not([hidden]){--tw-divide-x-reverse:0;border-right-width:calc(1px * var(--tw-divide-x-reverse));border-left-width:calc(1px * calc(1 - var(--tw-divide-x-reverse)))}.divide-black > :not([hidden]) ~ :not([hidden]){--tw-divide-opacity:1;border-color:rgb(0 0 0 / var(--tw-divide-opacity, 1))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-\[1\.5px\]{border-width:1.5px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-amber-200{--tw-border-opacity:1;border-color:rgb(253 230 138 / var(--tw-border-opacity, 1))}.border-emerald-200{--tw-border-opacity:1;border-color:rgb(167 243 208 / var(--tw-border-opacity, 1))}.border-indigo-200{--tw-border-opacity:1;border-color:rgb(199 210 254 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-300{--tw-border-opacity:1;border-color:rgb(203 213 225 / var(--tw-border-opacity, 1))}.border-violet-200{--tw-border-opacity:1;border-color:rgb(221 214 254 / var(--tw-border-opacity, 1))}.border-indigo-300{--tw-border-opacity:1;border-color:rgb(165 180 252 / var(--tw-border-opacity, 1))}.border-black{--tw-border-opacity:1;border-color:rgb(0 0 0 / var(--tw-border-opacity, 1))}.border-neutral-300{--tw-border-opacity:1;border-color:rgb(212 212 212 / var(--tw-border-opacity, 1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-emerald-100{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.bg-emerald-50{--tw-bg-opacity:1;background-color:rgb(236 253 245 / var(--tw-bg-opacity, 1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-indigo-50{--tw-bg-opacity:1;background-color:rgb(238 242 255 / var(--tw-bg-opacity, 1))}.bg-indigo-600{--tw-bg-opacity:1;background-color:rgb(79 70 229 / var(--tw-bg-opacity, 1))}.bg-rose-600{--tw-bg-opacity:1;background-color:rgb(225 29 72 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-violet-50{--tw-bg-opacity:1;background-color:rgb(245 243 255 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.bg-indigo-50\/70{background-color:rgb(238 242 255 / 0.7)}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-slate-900\/60{background-color:rgb(15 23 42 / 0.6)}.bg-neutral-100{--tw-bg-opacity:1;background-color:rgb(245 245 245 / var(--tw-bg-opacity, 1))}.p-4{padding:1rem}.p-2{padding:0.5rem}.p-2\.5{padding:0.625rem}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-5{padding:1.25rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-4{padding-top:1rem;padding-bottom:1rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.pr-1{padding-right:0.25rem}.pt-1{padding-top:0.25rem}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-\[13px\]{font-size:13px}.text-\[16px\]{font-size:16px}.text-\[17px\]{font-size:17px}.text-\[18px\]{font-size:18px}.text-\[28px\]{font-size:28px}.text-\[8\.5px\]{font-size:8.5px}.text-\[9\.5px\]{font-size:9.5px}.text-\[9px\]{font-size:9px}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.font-black{font-weight:900}.font-extrabold{font-weight:800}.uppercase{text-transform:uppercase}.tabular-nums{--tw-numeric-spacing:tabular-nums;font-variant-numeric:var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction)}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.leading-none{line-height:1}.leading-snug{line-height:1.375}.tracking-wider{letter-spacing:0.05em}.tracking-\[0\.12em\]{letter-spacing:0.12em}.tracking-\[0\.14em\]{letter-spacing:0.14em}.tracking-\[0\.18em\]{letter-spacing:0.18em}.tracking-tight{letter-spacing:-0.025em}.tracking-wide{letter-spacing:0.025em}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-amber-800{--tw-text-opacity:1;color:rgb(146 64 14 / var(--tw-text-opacity, 1))}.text-amber-900{--tw-text-opacity:1;color:rgb(120 53 15 / var(--tw-text-opacity, 1))}.text-emerald-700{--tw-text-opacity:1;color:rgb(4 120 87 / var(--tw-text-opacity, 1))}.text-emerald-800{--tw-text-opacity:1;color:rgb(6 95 70 / var(--tw-text-opacity, 1))}.text-indigo-800{--tw-text-opacity:1;color:rgb(55 48 163 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-violet-800{--tw-text-opacity:1;color:rgb(91 33 182 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-indigo-900{--tw-text-opacity:1;color:rgb(49 46 129 / var(--tw-text-opacity, 1))}.text-rose-600{--tw-text-opacity:1;color:rgb(225 29 72 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-black{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity, 1))}.text-neutral-600{--tw-text-opacity:1;color:rgb(82 82 82 / var(--tw-text-opacity, 1))}.line-through{-webkit-text-decoration-line:line-through;text-decoration-line:line-through}.decoration-2{text-decoration-thickness:2px}.opacity-80{opacity:0.8}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:bg-emerald-100:hover{--tw-bg-opacity:1;background-color:rgb(209 250 229 / var(--tw-bg-opacity, 1))}.hover\:bg-indigo-100:hover{--tw-bg-opacity:1;background-color:rgb(224 231 255 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-200:hover{--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-800:hover{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.hover\:bg-violet-100:hover{--tw-bg-opacity:1;background-color:rgb(237 233 254 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-700:hover{--tw-bg-opacity:1;background-color:rgb(4 120 87 / var(--tw-bg-opacity, 1))}.hover\:bg-indigo-700:hover{--tw-bg-opacity:1;background-color:rgb(67 56 202 / var(--tw-bg-opacity, 1))}.hover\:bg-rose-50:hover{--tw-bg-opacity:1;background-color:rgb(255 241 242 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-100:hover{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.hover\:text-rose-700:hover{--tw-text-opacity:1;color:rgb(190 18 60 / var(--tw-text-opacity, 1))}.hover\:text-slate-700:hover{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.hover\:text-slate-900:hover{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.focus\:border-slate-900:focus{--tw-border-opacity:1;border-color:rgb(15 23 42 / var(--tw-border-opacity, 1))}.focus\:border-indigo-500:focus{--tw-border-opacity:1;border-color:rgb(99 102 241 / var(--tw-border-opacity, 1))}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-slate-200:focus{--tw-ring-opacity:1;--tw-ring-color:rgb(226 232 240 / var(--tw-ring-opacity, 1))}.active\:scale-95:active{--tw-scale-x:.95;--tw-scale-y:.95;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@media (min-width: 640px){.sm\:col-span-2{grid-column:span 2 / span 2}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.sm\:p-5{padding:1.25rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}.sm\:text-\[12px\]{font-size:12px}.sm\:text-\[14px\]{font-size:14px}.sm\:text-\[17px\]{font-size:17px}.sm\:text-\[18px\]{font-size:18px}.sm\:text-\[19px\]{font-size:19px}.sm\:text-\[32px\]{font-size:32px}}@media (min-width: 1024px){.lg\:col-span-6{grid-column:span 6 / span 6}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}}</style><link rel="manifest" href="./manifest.json"><link rel="apple-touch-icon" href="./icon-192.png"></head>
+<body class="bg-slate-100 text-slate-900 min-h-screen">
+
+    <!-- Всплывающие уведомления -->
+    <div id="toast-container" class="no-print fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
+
+    <!-- Шапка приложения -->
+    <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+        <div class="max-w-6xl mx-auto px-3 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-sm shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">Остаток мерного товара</h1>
+                    <p class="text-xs text-slate-500">ЧБ-ценники со скидкой + голосовой ввод + А4</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Справочник артикулов -->
+                <button id="btn-open-catalog" type="button" title="База артикулов для автоподстановки названий" class="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-800 text-xs sm:text-sm font-semibold transition active:scale-95 cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                    </svg>
+                    <span>База <span id="catalog-count-badge" class="ml-0.5 px-1.5 py-0.5 text-[11px] rounded-md bg-indigo-600 text-white">0</span></span>
+                </button>
+
+                <!-- Пакет для APK без рекламы (.zip) -->
+                
+
+                <!-- Скачать на ПК -->
+                <button id="btn-download-app" type="button" title="Скачать файл программы для ПК" class="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-semibold transition active:scale-95 cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>На ПК (.html)</span>
+                </button>
+
+                <!-- Сохранить лист как картинку PNG -->
+                
+
+                <!-- Кнопка печати -->
+                <button id="btn-print" type="button" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95 cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    </svg>
+                    <span>Печать <span id="print-count-badge" class="ml-0.5 px-1.5 py-0.5 text-[11px] rounded-md bg-emerald-500 text-white">1</span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основная рабочая область -->
+    <main class="no-print max-w-6xl mx-auto px-3 sm:px-6 py-5 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Левая колонка: ввод данных и голосовой помощник -->
+        <section class="lg:col-span-6 space-y-4">
+
+            <!-- Панель голосового ввода -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                        <h2 class="text-sm font-bold text-slate-800">Голосовой ввод</h2>
+                    </div>
+                    <span id="voice-support-badge" class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Готов к диктовке</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button id="btn-voice-all" type="button" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold shadow-xs transition active:scale-95 cursor-pointer">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                        </svg>
+                        <span>Продиктовать всё сразу</span>
+                    </button>
+
+                    <button id="btn-voice-wizard" type="button" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-semibold transition active:scale-95 cursor-pointer">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span>Пошаговая диктовка</span>
+                    </button>
+                </div>
+
+                <!-- Статус прослушивания -->
+                <div id="voice-status-box" class="hidden rounded-xl bg-amber-50 border border-amber-200 px-3.5 py-2.5 flex items-center justify-between gap-2">
+                    <div class="min-w-0">
+                        <p id="voice-status-title" class="text-xs font-bold text-amber-900">Слушаю...</p>
+                        <p id="voice-status-transcript" class="text-xs text-amber-800 truncate">Скажите: «Артикул 89441399, длина 1 и 17, ширина 3, цена 915»</p>
+                    </div>
+                    <button id="btn-voice-stop" type="button" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-semibold cursor-pointer">Стоп</button>
+                </div>
+
+                <p class="text-[11px] text-slate-500 leading-relaxed">
+                    Пример фразы: <span class="font-medium text-slate-700">«Артикул 89441399, длина 1 и 17, ширина 3, цена 915»</span>
+                </p>
+            </div>
+
+            <!-- Форма параметров товара -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4">
+
+                <!-- Артикул (8 цифр) -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="input-code" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                            Артикул (8 цифр)
+                        </label>
+                        <span id="catalog-match-badge" class="hidden text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                            ✓ Найдено в базе
+                        </span>
+                    </div>
+                    <div class="flex gap-2">
+                        <input id="input-code" type="text" inputmode="numeric" maxlength="8" placeholder="89441399" class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 outline-none text-lg font-bold tracking-wider text-slate-900 transition">
+                        <button type="button" data-voice-field="code" title="Продиктовать артикул" class="voice-field-btn shrink-0 w-12 h-12 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition cursor-pointer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Введено цифр: <span id="code-count">8</span> / 8</p>
+                </div>
+
+                <!-- Наименование товара -->
+                <div>
+                    <label for="input-name" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                        Наименование товара
+                    </label>
+                    <div class="flex gap-2">
+                        <input id="input-name" type="text" placeholder="Например: Линолеум Tarkett Дуб светлый" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 outline-none text-sm font-medium text-slate-900 transition">
+                        <button type="button" data-voice-field="name" title="Продиктовать наименование" class="voice-field-btn shrink-0 w-11 h-11 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition cursor-pointer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Длина и Ширина -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="input-length" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                            Длина (м)
+                        </label>
+                        <div class="flex gap-2">
+                            <input id="input-length" type="text" inputmode="decimal" placeholder="1.17" class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 outline-none text-lg font-bold text-slate-900 transition">
+                            <button type="button" data-voice-field="length" title="Продиктовать длину" class="voice-field-btn shrink-0 w-12 h-12 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition cursor-pointer">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="input-width" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                            Ширина (м)
+                        </label>
+                        <div class="flex gap-2">
+                            <input id="input-width" type="text" inputmode="decimal" placeholder="3" class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 outline-none text-lg font-bold text-slate-900 transition">
+                            <button type="button" data-voice-field="width" title="Продиктовать ширину" class="voice-field-btn shrink-0 w-12 h-12 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition cursor-pointer">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Быстрый выбор стандартной ширины -->
+                        <div class="flex flex-wrap gap-1 mt-1.5">
+                            <button type="button" data-quick-width="1.5" class="quick-width-btn px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer">1.5</button>
+                            <button type="button" data-quick-width="2" class="quick-width-btn px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer">2</button>
+                            <button type="button" data-quick-width="2.5" class="quick-width-btn px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer">2.5</button>
+                            <button type="button" data-quick-width="3" class="quick-width-btn px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer">3</button>
+                            <button type="button" data-quick-width="3.5" class="quick-width-btn px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer">3.5</button>
+                            <button type="button" data-quick-width="4" class="quick-width-btn px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold cursor-pointer">4</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Цена за 1 м² и Скидка -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="sm:col-span-2">
+                        <label for="input-price" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                            Цена за 1 м² (руб)
+                        </label>
+                        <div class="flex gap-2">
+                            <input id="input-price" type="text" inputmode="decimal" placeholder="915" class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 outline-none text-lg font-bold text-slate-900 transition">
+                            <button type="button" data-voice-field="price" title="Продиктовать цену за м²" class="voice-field-btn shrink-0 w-12 h-12 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition cursor-pointer">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="input-discount" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                            Скидка (%)
+                        </label>
+                        <input id="input-discount" type="number" min="0" max="99" step="1" value="30" class="w-full px-3.5 py-3 rounded-xl border border-slate-300 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 outline-none text-lg font-bold text-slate-900 transition">
+                    </div>
+                </div>
+
+                <!-- Код для оплаты (PIN) -->
+                <div>
+                    <label for="input-pin" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
+                        Код для оплаты (PIN) — можно оставить пустым для записи ручкой
+                    </label>
+                    <input id="input-pin" type="text" placeholder="Необязательно" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-slate-900 focus:ring-2 focus:ring-slate-200 outline-none text-sm font-semibold text-slate-900 transition">
+                </div>
+
+                <!-- Сводка расчёта -->
+                <div class="grid grid-cols-3 gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
+                    <div>
+                        <div class="text-[11px] text-slate-500 font-medium">Площадь</div>
+                        <div id="summary-area" class="text-base font-extrabold text-slate-900">3.51 м²</div>
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-slate-500 font-medium">Без скидки</div>
+                        <div id="summary-raw" class="text-base font-bold text-slate-500 line-through">3211.65 ₽</div>
+                    </div>
+                    <div>
+                        <div class="text-[11px] text-slate-900 font-bold">Со скидкой</div>
+                        <div id="summary-final" class="text-lg font-black text-slate-900">2 248 ₽</div>
+                    </div>
+                </div>
+
+                <!-- Кнопки действий -->
+                <div class="flex flex-wrap gap-2.5 pt-1">
+                    <button id="btn-add-queue" type="button" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-xs transition active:scale-95 cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span>Добавить на лист печати</span>
+                    </button>
+
+                    <button id="btn-reset-form" type="button" class="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition active:scale-95 cursor-pointer">
+                        Очистить
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Правая колонка: предпросмотр ценника и очередь на лист А4 -->
+        <section class="lg:col-span-6 space-y-5">
+
+            <!-- Живой предпросмотр текущего ценника -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-sm font-bold text-slate-800">Предпросмотр ЧБ-ценника</h2>
+                    <span class="text-xs text-slate-400">Оптимизировано под ЧБ печать</span>
+                </div>
+                <div id="live-preview-container" class="max-w-md mx-auto"></div>
+            </div>
+
+            <!-- Очередь печати на лист А4 (до 4 штук на страницу) -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs">
+                <div class="flex items-center justify-between gap-2 mb-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-800">Лист печати А4 (по 4 ценника на лист)</h2>
+                        <p class="text-xs text-slate-500">Если список пуст — на печать пойдёт текущий ценник</p>
+                    </div>
+                    <button id="btn-clear-queue" type="button" class="hidden text-xs font-semibold text-rose-600 hover:text-rose-700 px-2.5 py-1.5 rounded-lg hover:bg-rose-50 cursor-pointer">
+                        Очистить лист
+                    </button>
+                </div>
+                <div id="queue-list" class="space-y-2"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Область для вывода на принтер -->
+    <div id="print-area" class="hidden"></div>
+
+    <!-- Модальное окно: База артикулов -->
+    <div id="catalog-modal" class="no-print hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base sm:text-lg">База артикулов (автоподстановка)</h3>
+                    <p class="text-xs text-slate-500">Вводите 8 цифр артикула — название и цена за м² подставятся сами</p>
+                </div>
+                <button id="btn-close-catalog" type="button" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="p-5 overflow-y-auto space-y-4">
+                <div class="bg-indigo-50/70 border border-indigo-200 rounded-xl p-3.5 space-y-2">
+                    <div class="text-xs font-bold text-indigo-900">Импорт списка из Excel:</div>
+                    <p class="text-[11px] text-indigo-800 leading-relaxed">
+                        Выделите в Excel столбцы <strong>Артикул | Наименование | Цена за м²</strong> (цена необязательна), скопируйте и вставьте сюда:
+                    </p>
+                    <textarea id="catalog-import-text" rows="4" placeholder="89441399	Линолеум бытовой Дуб светлый	915
+82345678	Линолеум полукоммерческий Ясень	740" class="w-full p-2.5 rounded-xl border border-indigo-200 bg-white text-xs font-mono outline-none focus:border-indigo-500"></textarea>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="btn-import-catalog" type="button" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition cursor-pointer">
+                                Загрузить в базу
+                            </button>
+                            <label class="px-3 py-2 rounded-xl bg-white hover:bg-indigo-100 border border-indigo-300 text-indigo-800 text-xs font-semibold transition cursor-pointer">
+                                Из файла (.csv / .txt)
+                                <input id="catalog-file-input" type="file" accept=".csv,.txt" class="hidden">
+                            </label>
+                        </div>
+                        <button id="btn-clear-catalog" type="button" class="px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-medium transition cursor-pointer">
+                            Очистить всю базу
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                        Сохранённые артикулы (<span id="catalog-modal-count">0</span>)
+                    </div>
+                    <div id="catalog-items-list" class="space-y-1.5 max-h-56 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // СОСТОЯНИЕ ПРИЛОЖЕНИЯ И ССЫЛКИ НА DOM
+        // =========================================================================
+        const state = {
+            code: '89441399',
+            length: '1.17',
+            width: '3',
+            price: '915',
+            discount: '30',
+            name: '',
+            pin: '',
+            queue: [],
+            catalog: {}
+        };
+
+        const inputs = {
+            code: document.getElementById('input-code'),
+            name: document.getElementById('input-name'),
+            length: document.getElementById('input-length'),
+            width: document.getElementById('input-width'),
+            price: document.getElementById('input-price'),
+            discount: document.getElementById('input-discount'),
+            pin: document.getElementById('input-pin')
+        };
+
+        const livePreviewContainer = document.getElementById('live-preview-container');
+        const queueListEl = document.getElementById('queue-list');
+        const printAreaEl = document.getElementById('print-area');
+        const printCountBadge = document.getElementById('print-count-badge');
+        const btnClearQueue = document.getElementById('btn-clear-queue');
+        const codeCountEl = document.getElementById('code-count');
+        const summaryAreaEl = document.getElementById('summary-area');
+        const summaryRawEl = document.getElementById('summary-raw');
+        const summaryFinalEl = document.getElementById('summary-final');
+
+        const catalogCountBadge = document.getElementById('catalog-count-badge');
+        const catalogMatchBadge = document.getElementById('catalog-match-badge');
+        const catalogModal = document.getElementById('catalog-modal');
+        const catalogItemsList = document.getElementById('catalog-items-list');
+        const catalogModalCount = document.getElementById('catalog-modal-count');
+
+        // =========================================================================
+        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // =========================================================================
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function parseNum(val) {
+            if (typeof val === 'number') return isFinite(val) ? val : 0;
+            const cleaned = String(val || '').replace(',', '.').replace(/[^\d.]/g, '');
+            const num = parseFloat(cleaned);
+            return isFinite(num) ? num : 0;
+        }
+
+        function formatCleanNum(num, maxDecimals = 2) {
+            if (!isFinite(num) || num === 0) return '0';
+            return parseFloat(num.toFixed(maxDecimals)).toString();
+        }
+
+        function formatPriceInt(num) {
+            if (!isFinite(num) || num === 0) return '0';
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const colors = {
+                success: 'bg-emerald-600 text-white',
+                warning: 'bg-amber-500 text-white',
+                error: 'bg-rose-600 text-white',
+                info: 'bg-slate-800 text-white'
+            };
+            const el = document.createElement('div');
+            el.className = `${colors[type] || colors.info} px-4 py-3 rounded-xl shadow-lg text-xs sm:text-sm font-medium pointer-events-auto transition-all duration-300`;
+            el.textContent = message;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-6px)';
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+
+        function saveToStorage() {
+            try {
+                localStorage.setItem('merny_ostatok_prefs_v2', JSON.stringify({
+                    discount: state.discount,
+                    queue: state.queue,
+                    catalog: state.catalog
+                }));
+            } catch (e) {
+                console.warn('localStorage недоступен:', e);
+            }
+        }
+
+        function loadFromStorage() {
+            try {
+                const raw = localStorage.getItem('merny_ostatok_prefs_v2') || localStorage.getItem('linoleum_tag_prefs');
+                if (!raw) return;
+                const parsed = JSON.parse(raw);
+                if (parsed.discount !== undefined) state.discount = parsed.discount;
+                if (Array.isArray(parsed.queue)) {
+                    state.queue = parsed.queue.map(item => ({
+                        code: item.code || item.lm || '',
+                        length: item.length || '',
+                        width: item.width || '',
+                        price: item.price || '',
+                        discount: item.discount || '30',
+                        name: item.name || '',
+                        pin: item.pin || ''
+                    }));
+                }
+                if (parsed.catalog && typeof parsed.catalog === 'object') state.catalog = parsed.catalog;
+            } catch (e) {
+                console.warn('Ошибка чтения localStorage:', e);
+            }
+        }
+
+        // =========================================================================
+        // РАСЧЁТ И ГЕНЕРАЦИЯ СОВРЕМЕННОГО ЧБ-ЦЕННИКА
+        // =========================================================================
+        function calculateTagValues(item) {
+            const length = parseNum(item.length);
+            const width = parseNum(item.width);
+            const price = parseNum(item.price);
+            const discount = Math.min(99, Math.max(0, parseNum(item.discount)));
+
+            const area = Math.round(length * width * 100) / 100;
+            const rawPrice = Math.round(area * price * 100) / 100;
+            const finalPrice = Math.round(rawPrice * (1 - discount / 100));
+
+            return { length, width, price, discount, area, rawPrice, finalPrice };
+        }
+
+        function buildPriceTagHTML(item) {
+            const calc = calculateTagValues(item);
+            const codeText = escapeHtml(item.code || '');
+            const nameText = escapeHtml(item.name || '');
+            const pinText = escapeHtml(item.pin || '');
+
+            return `
+                <div class="price-tag-card select-none flex flex-col justify-between">
+                    <!-- Чёрная контрастная шапка с бейджем скидки -->
+                    <div class="tag-header-bar px-3 py-2.5 flex items-center justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="text-[9px] font-bold uppercase tracking-[0.14em] opacity-80 leading-none mb-1">Товар со скидкой</div>
+                            <div class="text-[13px] sm:text-[14px] font-black uppercase tracking-wide leading-tight">Остаток мерного товара</div>
+                        </div>
+                        <div class="tag-discount-pill shrink-0 px-2.5 py-1 text-[17px] sm:text-[19px] font-black leading-none tabular-nums">
+                            -${calc.discount}%
+                        </div>
+                    </div>
+
+                    <!-- Подзаголовок -->
+                    <div class="px-3 py-1.5 text-center text-[11px] font-bold border-b border-black bg-white">
+                        Уважаемые покупатели, данный товар продаётся со скидкой!
+                    </div>
+
+                    <!-- Основное тело ценника -->
+                    <div class="p-3 space-y-2.5">
+                        <!-- Артикул и Наименование -->
+                        <div class="grid grid-cols-12 gap-2 items-stretch">
+                            <div class="col-span-5 border-[1.5px] border-black px-2 py-1.5 flex flex-col justify-center">
+                                <div class="text-[9px] font-extrabold uppercase tracking-wider text-neutral-600 leading-none mb-1">Артикул</div>
+                                <div class="text-[17px] sm:text-[18px] font-black tracking-wider leading-none tabular-nums">${codeText || '&nbsp;'}</div>
+                            </div>
+                            <div class="col-span-7 border-[1.5px] border-black px-2 py-1.5 flex flex-col justify-center">
+                                <div class="text-[9px] font-extrabold uppercase tracking-wider text-neutral-600 leading-none mb-1">Наименование</div>
+                                <div class="text-[11px] font-bold leading-tight min-h-[22px] flex items-center">${nameText || '&nbsp;'}</div>
+                            </div>
+                        </div>
+
+                        <!-- Лента параметров: Длина × Ширина = Площадь | Цена за м² -->
+                        <div class="grid grid-cols-4 border-[1.5px] border-black divide-x divide-black text-center">
+                            <div class="py-1.5 px-1">
+                                <div class="text-[8.5px] font-bold uppercase text-neutral-600">Длина</div>
+                                <div class="text-[13px] font-extrabold tabular-nums mt-0.5">${calc.length ? formatCleanNum(calc.length) + ' м' : '—'}</div>
+                            </div>
+                            <div class="py-1.5 px-1">
+                                <div class="text-[8.5px] font-bold uppercase text-neutral-600">Ширина</div>
+                                <div class="text-[13px] font-extrabold tabular-nums mt-0.5">${calc.width ? formatCleanNum(calc.width) + ' м' : '—'}</div>
+                            </div>
+                            <div class="py-1.5 px-1 bg-neutral-100">
+                                <div class="text-[8.5px] font-extrabold uppercase text-black">Площадь</div>
+                                <div class="text-[13px] font-black tabular-nums mt-0.5">${calc.area ? formatCleanNum(calc.area) + ' м²' : '0 м²'}</div>
+                            </div>
+                            <div class="py-1.5 px-1">
+                                <div class="text-[8.5px] font-bold uppercase text-neutral-600">За 1 м²</div>
+                                <div class="text-[13px] font-extrabold tabular-nums mt-0.5">${calc.price ? formatCleanNum(calc.price) + ' ₽' : '—'}</div>
+                            </div>
+                        </div>
+
+                        <!-- Главный ценовой блок: Старая цена + Крупная цена со скидкой -->
+                        <div class="grid grid-cols-12 gap-2 items-stretch">
+                            <div class="col-span-5 border border-black p-2 flex flex-col justify-center items-center text-center">
+                                <div class="text-[9px] font-bold uppercase tracking-wide text-neutral-600 leading-tight">Цена без скидки</div>
+                                <div class="text-[16px] sm:text-[17px] font-bold line-through decoration-2 tabular-nums mt-1 leading-none">
+                                    ${calc.rawPrice ? formatCleanNum(calc.rawPrice) : '0'} ₽
+                                </div>
+                                <div class="text-[9.5px] font-extrabold mt-1 border-t border-neutral-300 pt-1 w-full">
+                                    Выгода: ${formatPriceInt(Math.max(0, calc.rawPrice - calc.finalPrice))} ₽
+                                </div>
+                            </div>
+                            <div class="col-span-7 tag-price-hero p-2 flex flex-col justify-center items-center text-center">
+                                <div class="text-[9.5px] font-black uppercase tracking-[0.12em] leading-none">Цена со скидкой</div>
+                                <div class="text-[28px] sm:text-[32px] font-black leading-none tracking-tight tabular-nums mt-1">
+                                    ${formatPriceInt(calc.finalPrice)} <span class="text-[18px] font-extrabold">₽</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Код для оплаты (PIN) -->
+                        <div class="flex items-center gap-2">
+                            <div class="shrink-0">
+                                <div class="text-[11px] font-black uppercase leading-tight">Код для оплаты</div>
+                                <div class="text-[9px] font-bold uppercase tracking-wider text-neutral-600 leading-none">PIN</div>
+                            </div>
+                            <div class="tag-pin-box flex-1 h-9 px-2.5 flex items-center justify-center text-[16px] font-black tracking-[0.18em] tabular-nums">
+                                ${pinText || '&nbsp;'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Контрастный подвал с инструкцией для покупателя -->
+                    <div class="tag-footer-bar px-3 py-2 text-center text-[11px] sm:text-[12px] font-extrabold leading-snug tracking-wide">
+                        Чтобы получить код для оплаты,<br>обратитесь к продавцу-консультанту!
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateCodeCounter() {
+            codeCountEl.textContent = state.code.length;
+        }
+
+        function updatePreview() {
+            const calc = calculateTagValues(state);
+            summaryAreaEl.textContent = `${formatCleanNum(calc.area)} м²`;
+            summaryRawEl.textContent = `${formatCleanNum(calc.rawPrice)} ₽`;
+            summaryFinalEl.textContent = `${formatPriceInt(calc.finalPrice)} ₽`;
+            livePreviewContainer.innerHTML = buildPriceTagHTML(state);
+        }
+
+        function syncInputsFromState() {
+            inputs.code.value = state.code;
+            inputs.name.value = state.name;
+            inputs.length.value = state.length;
+            inputs.width.value = state.width;
+            inputs.price.value = state.price;
+            inputs.discount.value = state.discount;
+            inputs.pin.value = state.pin;
+            updateCodeCounter();
+        }
+
+        // =========================================================================
+        // БАЗА АРТИКУЛОВ (АВТОПОДСТАНОВКА)
+        // =========================================================================
+        function lookupInCatalog(code, notify = true) {
+            const entry = state.catalog[code];
+            if (entry) {
+                if (entry.name) {
+                    state.name = entry.name;
+                    inputs.name.value = entry.name;
+                }
+                if (entry.price) {
+                    state.price = entry.price;
+                    inputs.price.value = entry.price;
+                }
+                catalogMatchBadge.classList.remove('hidden');
+                if (notify) {
+                    const priceNote = entry.price ? ` · ${entry.price} ₽/м²` : '';
+                    showToast(`Подтянуто из базы: ${entry.name}${priceNote}`, 'success');
+                }
+                return true;
+            } else {
+                catalogMatchBadge.classList.add('hidden');
+                return false;
+            }
+        }
+
+        function rememberInCatalog(code, name, price) {
+            const cleanCode = String(code || '').replace(/\D/g, '');
+            const cleanName = String(name || '').trim();
+            if (cleanCode.length === 8 && cleanName) {
+                state.catalog[cleanCode] = {
+                    name: cleanName,
+                    price: price ? String(price) : (state.catalog[cleanCode]?.price || '')
+                };
+                saveToStorage();
+                renderCatalogUI();
+            }
+        }
+
+        function importCatalogText(raw) {
+            const lines = String(raw || '').trim().split(/\r?\n/);
+            let added = 0;
+            lines.forEach(line => {
+                const parts = line.split(/\t|;|\|/).map(s => s.trim().replace(/^"|"$/g, '')).filter(Boolean);
+                if (parts.length >= 2) {
+                    const code = parts[0].replace(/\D/g, '');
+                    const name = parts[1];
+                    const price = parts[2] ? parts[2].replace(',', '.').replace(/[^\d.]/g, '') : '';
+                    if (code.length === 8 && name) {
+                        state.catalog[code] = { name, price };
+                        added++;
+                    }
+                }
+            });
+
+            if (added > 0) {
+                saveToStorage();
+                renderCatalogUI();
+                showToast(`Загружено артикулов в базу: ${added}`, 'success');
+                if (state.code.length === 8) {
+                    lookupInCatalog(state.code, false);
+                    updatePreview();
+                }
+            } else {
+                showToast('Не найдено строк формата «8 цифр [Tab/;] Название [Tab/;] Цена»', 'warning');
+            }
+            return added;
+        }
+
+        function renderCatalogUI() {
+            const entries = Object.entries(state.catalog);
+            catalogCountBadge.textContent = entries.length;
+            catalogModalCount.textContent = entries.length;
+
+            if (entries.length === 0) {
+                catalogItemsList.innerHTML = `<div class="text-xs text-slate-400 text-center py-4 border border-dashed border-slate-200 rounded-xl">База пока пуста. Вставьте список из Excel выше — или просто заполняйте ценники, и программа запомнит их сама.</div>`;
+                return;
+            }
+
+            catalogItemsList.innerHTML = entries.map(([code, item]) => `
+                <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                    <div class="min-w-0">
+                        <span class="font-bold text-slate-900">${escapeHtml(code)}</span>
+                        <span class="text-slate-600 ml-1.5">${escapeHtml(item.name)}</span>
+                        ${item.price ? `<span class="ml-1.5 font-semibold text-emerald-700">${escapeHtml(item.price)} ₽/м²</span>` : ''}
+                    </div>
+                    <button type="button" onclick="deleteCatalogItem('${escapeHtml(code)}')" title="Удалить из базы"
+                        class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer shrink-0">✕</button>
+                </div>
+            `).join('');
+        }
+
+        window.deleteCatalogItem = function(code) {
+            delete state.catalog[code];
+            saveToStorage();
+            renderCatalogUI();
+            if (state.code === code) catalogMatchBadge.classList.add('hidden');
+        };
+
+        // =========================================================================
+        // ОЧЕРЕДЬ ПЕЧАТИ, ПЕЧАТЬ НА А4, ЭКСПОРТ PNG, HTML И PWA (.ZIP)
+        // =========================================================================
+        function renderQueue() {
+            const count = state.queue.length;
+            printCountBadge.textContent = count > 0 ? count : 1;
+
+            if (count === 0) {
+                btnClearQueue.classList.add('hidden');
+                queueListEl.innerHTML = `
+                    <div class="text-xs text-slate-400 text-center py-5 border border-dashed border-slate-200 rounded-xl">
+                        Пока ничего не добавлено. Нажмите <strong>«Добавить на лист печати»</strong>, чтобы собрать до 4 ценников на один лист А4.
+                    </div>
+                `;
+                return;
+            }
+
+            btnClearQueue.classList.remove('hidden');
+            queueListEl.innerHTML = state.queue.map((item, idx) => {
+                const calc = calculateTagValues(item);
+                return `
+                    <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">#${idx + 1}</span>
+                                <span class="text-sm font-bold text-slate-900">Арт. ${escapeHtml(item.code || '—')}</span>
+                                <span class="text-xs font-black text-slate-900">${formatPriceInt(calc.finalPrice)} ₽</span>
+                            </div>
+                            <div class="text-xs text-slate-500 truncate mt-0.5">
+                                ${formatCleanNum(calc.length)} × ${formatCleanNum(calc.width)} м = ${formatCleanNum(calc.area)} м² · ${formatCleanNum(calc.price)} ₽/м² (-${calc.discount}%)${item.name ? ' · ' + escapeHtml(item.name) : ''}
+                            </div>
+                        </div>
+                        <button type="button" onclick="removeQueueItem(${idx})" title="Удалить"
+                            class="shrink-0 w-8 h-8 rounded-lg hover:bg-rose-100 text-slate-400 hover:text-rose-600 flex items-center justify-center cursor-pointer">
+                            ✕
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.removeQueueItem = function(index) {
+            state.queue.splice(index, 1);
+            saveToStorage();
+            renderQueue();
+        };
+
+        function getItemsForOutput() {
+            return state.queue.length > 0 ? state.queue : [{
+                code: state.code,
+                length: state.length,
+                width: state.width,
+                price: state.price,
+                discount: state.discount,
+                name: state.name,
+                pin: state.pin
+            }];
+        }
+
+        function triggerPrint() {
+            const items = getItemsForOutput();
+            let pagesHTML = '';
+            for (let i = 0; i < items.length; i += 4) {
+                const chunk = items.slice(i, i + 4);
+                pagesHTML += `<div class="print-page">${chunk.map(buildPriceTagHTML).join('')}</div>`;
+            }
+            printAreaEl.innerHTML = pagesHTML;
+
+            // Небольшая задержка гарантирует, что DOM успел обновиться перед окном печати
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    try {
+                        window.print();
+                    } catch (e) {
+                        showToast('Встроенный просмотр блокирует печать — нажмите «PNG» или откройте в Chrome', 'warning');
+                    }
+                }, 60);
+            });
+        }
+
+        // Отрисовка нового ЧБ-ценника на Canvas (для кнопки PNG)
+        function drawTagOnCanvas(ctx, item, x, y, w, h) {
+            const calc = calculateTagValues(item);
+            ctx.save();
+            ctx.translate(x, y);
+
+            // Белый фон и внешняя чёрная рамка
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(0, 0, w, h);
+
+            // 1. Чёрная шапка
+            const headerH = 88;
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, w, headerH);
+
+            ctx.fillStyle = '#d4d4d4';
+            ctx.font = 'bold 14px Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText('ТОВАР СО СКИДКОЙ', 20, 16);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 22px Arial, sans-serif';
+            ctx.fillText('ОСТАТОК МЕРНОГО ТОВАРА', 20, 42, w - 150);
+
+            // Белый бейдж скидки справа
+            const badgeW = 110;
+            const badgeH = 54;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(w - badgeW - 18, 17, badgeW, badgeH);
+            ctx.fillStyle = '#000000';
+            ctx.font = '900 30px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`-${calc.discount}%`, w - badgeW / 2 - 18, 17 + badgeH / 2);
+
+            // 2. Подзаголовок
+            const subY = headerH;
+            const subH = 40;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, subY, w, subH);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, subY + subH);
+            ctx.lineTo(w, subY + subH);
+            ctx.stroke();
+
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 15px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Уважаемые покупатели, данный товар продаётся со скидкой!', w / 2, subY + subH / 2, w - 24);
+
+            const pad = 20;
+            const innerW = w - pad * 2;
+            let curY = subY + subH + 20;
+
+            // 3. Артикул и Наименование
+            const row3H = 74;
+            const artW = innerW * 0.42;
+            const nameX = pad + artW + 14;
+            const nameW = innerW - artW - 14;
+
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2.5;
+            ctx.strokeRect(pad, curY, artW, row3H);
+            ctx.strokeRect(nameX, curY, nameW, row3H);
+
+            ctx.fillStyle = '#525252';
+            ctx.font = 'bold 13px Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText('АРТИКУЛ', pad + 12, curY + 10);
+            ctx.fillText('НАИМЕНОВАНИЕ', nameX + 12, curY + 10);
+
+            ctx.fillStyle = '#000000';
+            ctx.font = '900 28px Arial, sans-serif';
+            ctx.fillText(item.code || '', pad + 12, curY + 33, artW - 24);
+
+            ctx.font = 'bold 17px Arial, sans-serif';
+            ctx.fillText(item.name || '', nameX + 12, curY + 37, nameW - 24);
+
+            curY += row3H + 18;
+
+            // 4. Лента параметров (4 колонки)
+            const specsH = 78;
+            const colW = innerW / 4;
+            const specs = [
+                { label: 'ДЛИНА', val: calc.length ? `${formatCleanNum(calc.length)} м` : '—', shaded: false },
+                { label: 'ШИРИНА', val: calc.width ? `${formatCleanNum(calc.width)} м` : '—', shaded: false },
+                { label: 'ПЛОЩАДЬ', val: `${formatCleanNum(calc.area)} м²`, shaded: true },
+                { label: 'ЗА 1 М²', val: calc.price ? `${formatCleanNum(calc.price)} ₽` : '—', shaded: false }
+            ];
+
+            specs.forEach((sp, i) => {
+                const bx = pad + i * colW;
+                if (sp.shaded) {
+                    ctx.fillStyle = '#f3f4f6';
+                    ctx.fillRect(bx, curY, colW, specsH);
+                }
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(bx, curY, colW, specsH);
+
+                ctx.fillStyle = sp.shaded ? '#000000' : '#525252';
+                ctx.font = 'bold 13px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText(sp.label, bx + colW / 2, curY + 14);
+
+                ctx.fillStyle = '#000000';
+                ctx.font = '900 21px Arial, sans-serif';
+                ctx.fillText(sp.val, bx + colW / 2, curY + 40, colW - 10);
+            });
+
+            curY += specsH + 20;
+
+            // 5. Ценовой блок
+            const priceH = 148;
+            const oldW = innerW * 0.41;
+            const newX = pad + oldW + 14;
+            const newW = innerW - oldW - 14;
+
+            // Старая цена
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(pad, curY, oldW, priceH);
+
+            ctx.fillStyle = '#525252';
+            ctx.font = 'bold 14px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText('ЦЕНА БЕЗ СКИДКИ', pad + oldW / 2, curY + 18);
+
+            const oldPriceStr = `${calc.rawPrice ? formatCleanNum(calc.rawPrice) : '0'} ₽`;
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 28px Arial, sans-serif';
+            ctx.fillText(oldPriceStr, pad + oldW / 2, curY + 54, oldW - 16);
+
+            // Зачёркивание старой цены
+            const textMetrics = ctx.measureText(oldPriceStr);
+            const strikeW = Math.min(textMetrics.width + 10, oldW - 24);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(pad + oldW / 2 - strikeW / 2, curY + 69);
+            ctx.lineTo(pad + oldW / 2 + strikeW / 2, curY + 69);
+            ctx.stroke();
+
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 14px Arial, sans-serif';
+            ctx.fillText(`Выгода: ${formatPriceInt(Math.max(0, calc.rawPrice - calc.finalPrice))} ₽`, pad + oldW / 2, curY + 108, oldW - 14);
+
+            // Новая цена со скидкой
+            ctx.fillStyle = '#ececec';
+            ctx.fillRect(newX, curY, newW, priceH);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(newX, curY, newW, priceH);
+
+            ctx.fillStyle = '#000000';
+            ctx.font = '900 16px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText('ЦЕНА СО СКИДКОЙ', newX + newW / 2, curY + 22);
+
+            ctx.font = '900 54px Arial, sans-serif';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${formatPriceInt(calc.finalPrice)} ₽`, newX + newW / 2, curY + 95, newW - 20);
+
+            curY += priceH + 22;
+
+            // 6. Код для оплаты (PIN)
+            const pinH = 58;
+            ctx.fillStyle = '#000000';
+            ctx.font = '900 17px Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText('КОД ДЛЯ ОПЛАТЫ', pad, curY + 8);
+            ctx.fillStyle = '#525252';
+            ctx.font = 'bold 13px Arial, sans-serif';
+            ctx.fillText('PIN', pad, curY + 32);
+
+            const pinBoxX = pad + 185;
+            const pinBoxW = innerW - 185;
+            ctx.save();
+            ctx.setLineDash([8, 5]);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2.5;
+            ctx.strokeRect(pinBoxX, curY, pinBoxW, pinH);
+            ctx.restore();
+
+            if (item.pin) {
+                ctx.fillStyle = '#000000';
+                ctx.font = '900 26px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(item.pin, pinBoxX + pinBoxW / 2, curY + pinH / 2, pinBoxW - 16);
+            }
+
+            // 7. Чёрный подвал
+            const footerH = 74;
+            const footerY = h - footerH;
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, footerY, w, footerH);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 19px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Чтобы получить код для оплаты,', w / 2, footerY + 25, w - 24);
+            ctx.fillText('обратитесь к продавцу-консультанту!', w / 2, footerY + 51, w - 24);
+
+            ctx.restore();
+        }
+
+        function exportSheetAsPng() {
+            const items = getItemsForOutput().slice(0, 4);
+            const canvas = document.createElement('canvas');
+            canvas.width = 1240;
+            canvas.height = 1754;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const margin = 44;
+            const gap = 36;
+            const cardW = (canvas.width - margin * 2 - gap) / 2;
+            const cardH = 740;
+
+            items.forEach((item, idx) => {
+                const col = idx % 2;
+                const row = Math.floor(idx / 2);
+                const x = margin + col * (cardW + gap);
+                const y = margin + row * (cardH + gap);
+                drawTagOnCanvas(ctx, item, x, y, cardW, cardH);
+            });
+
+            const link = document.createElement('a');
+            link.download = `cenniki_ostatok_${items[0].code || 'list'}.png`;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showToast('ЧБ-лист сохранён как картинка PNG!', 'success');
+        }
+
+        function buildCleanHtmlSnapshot(injectPwa = false) {
+            const clone = document.documentElement.cloneNode(true);
+            const clearIds = ['toast-container', 'live-preview-container', 'queue-list', 'print-area', 'catalog-items-list'];
+            clearIds.forEach(id => {
+                const node = clone.querySelector('#' + id);
+                if (node) node.innerHTML = '';
+            });
+            const modal = clone.querySelector('#catalog-modal');
+            if (modal) modal.classList.add('hidden');
+            const voiceBox = clone.querySelector('#voice-status-box');
+            if (voiceBox) voiceBox.classList.add('hidden');
+
+            if (injectPwa) {
+                // В готовом APK убираем кнопки сборки архива и PNG, но оставляем «База», «На ПК (.html)» и «Печать»
+                const pwaBtn = clone.querySelector('#btn-download-pwa');
+                if (pwaBtn) pwaBtn.remove();
+                const pngBtn = clone.querySelector('#btn-export-png');
+                if (pngBtn) pngBtn.remove();
+
+                const head = clone.querySelector('head');
+                if (head && !head.querySelector('link[rel="manifest"]')) {
+                    const manifestLink = document.createElement('link');
+                    manifestLink.setAttribute('rel', 'manifest');
+                    manifestLink.setAttribute('href', './manifest.json');
+                    head.appendChild(manifestLink);
+
+                    const appleIcon = document.createElement('link');
+                    appleIcon.setAttribute('rel', 'apple-touch-icon');
+                    appleIcon.setAttribute('href', './icon-192.png');
+                    head.appendChild(appleIcon);
+                }
+                const body = clone.querySelector('body');
+                if (body && !clone.querySelector('#pwa-sw-register')) {
+                    const swScript = document.createElement('script');
+                    swScript.id = 'pwa-sw-register';
+                    swScript.textContent = `if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); }); }`;
+                    body.appendChild(swScript);
+                }
+            } else {
+                // Для автономного файла на ПК убираем PWA-регистрацию, чтобы не было лишних запросов с file://
+                const manifestLink = clone.querySelector('link[rel="manifest"]');
+                if (manifestLink) manifestLink.remove();
+                const swScript = clone.querySelector('#pwa-sw-register');
+                if (swScript) swScript.remove();
+            }
+            return '<!DOCTYPE html>\n' + clone.outerHTML;
+        }
+
+        function downloadStandaloneHtml() {
+            try {
+                const htmlContent = buildCleanHtmlSnapshot(false);
+                const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'cennik_ostatok.html';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showToast('Файл cennik_ostatok.html скачан!', 'success');
+            } catch (e) {
+                console.error(e);
+                showToast('Не удалось скачать файл', 'error');
+            }
+        }
+
+        // =========================================================================
+        // ГЕНЕРАТОР PWA-ПАКЕТА (.ZIP) ДЛЯ PWABUILDER
+        // =========================================================================
+        function generateIconPngBytes(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(0, 0, size, size);
+
+            ctx.save();
+            const scale = size / 64;
+            ctx.scale(scale, scale);
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(18, 18);
+            ctx.lineTo(32, 18);
+            ctx.lineTo(48, 34);
+            ctx.lineTo(34, 48);
+            ctx.lineTo(18, 32);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = '#111827';
+            ctx.beginPath();
+            ctx.arc(26, 26, 3.3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            const base64 = canvas.toDataURL('image/png').split(',')[1];
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes;
+        }
+
+        function crc32(bytes) {
+            let c = 0xffffffff;
+            for (let i = 0; i < bytes.length; i++) {
+                c ^= bytes[i];
+                for (let k = 0; k < 8; k++) {
+                    c = (c >>> 1) ^ (0xedb88320 & -(c & 1));
+                }
+            }
+            return (c ^ 0xffffffff) >>> 0;
+        }
+
+        function buildZipBlob(files) {
+            const encoder = new TextEncoder();
+            const localParts = [];
+            const centralParts = [];
+            let offset = 0;
+
+            files.forEach((file) => {
+                const nameBytes = encoder.encode(file.name);
+                const dataBytes = file.data instanceof Uint8Array ? file.data : encoder.encode(file.data);
+                const crc = crc32(dataBytes);
+                const size = dataBytes.length;
+
+                const local = new Uint8Array(30 + nameBytes.length);
+                const lv = new DataView(local.buffer);
+                lv.setUint32(0, 0x04034b50, true);
+                lv.setUint16(4, 20, true);
+                lv.setUint16(6, 0x0800, true);
+                lv.setUint32(14, crc, true);
+                lv.setUint32(18, size, true);
+                lv.setUint32(22, size, true);
+                lv.setUint16(26, nameBytes.length, true);
+                local.set(nameBytes, 30);
+
+                localParts.push(local, dataBytes);
+
+                const central = new Uint8Array(46 + nameBytes.length);
+                const cv = new DataView(central.buffer);
+                cv.setUint32(0, 0x02014b50, true);
+                cv.setUint16(4, 20, true);
+                cv.setUint16(6, 20, true);
+                cv.setUint16(8, 0x0800, true);
+                cv.setUint32(16, crc, true);
+                cv.setUint32(20, size, true);
+                cv.setUint32(24, size, true);
+                cv.setUint16(28, nameBytes.length, true);
+                cv.setUint32(42, offset, true);
+                central.set(nameBytes, 46);
+
+                centralParts.push(central);
+                offset += local.length + dataBytes.length;
+            });
+
+            const centralSize = centralParts.reduce((acc, part) => acc + part.length, 0);
+            const eocd = new Uint8Array(22);
+            const ev = new DataView(eocd.buffer);
+            ev.setUint32(0, 0x06054b50, true);
+            ev.setUint16(8, files.length, true);
+            ev.setUint16(10, files.length, true);
+            ev.setUint32(12, centralSize, true);
+            ev.setUint32(16, offset, true);
+
+            return new Blob([...localParts, ...centralParts, eocd], { type: 'application/zip' });
+        }
+
+        function downloadPwaZipPackage() {
+            try {
+                const indexHtml = buildCleanHtmlSnapshot(true);
+
+                const manifestJson = JSON.stringify({
+                    id: './',
+                    name: 'Ценник: Остаток мерного товара',
+                    short_name: 'Ценник 30%',
+                    description: 'Калькулятор и генератор ЧБ-ценников для остатков мерного товара со скидкой и голосовым вводом.',
+                    lang: 'ru',
+                    dir: 'ltr',
+                    start_url: './',
+                    scope: './',
+                    display: 'standalone',
+                    orientation: 'portrait',
+                    background_color: '#f1f5f9',
+                    theme_color: '#111827',
+                    categories: ['business', 'utilities'],
+                    icons: [
+                        { src: './icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+                        { src: './icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+                        { src: './icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+                    ]
+                }, null, 2);
+
+                const swJs = `const CACHE_NAME = 'cennik-ostatok-v2';
+const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      return cached || fetch(event.request).then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => {});
+        return res;
+      }).catch(() => cached);
+    })
+  );
+});`;
+
+                const privacyHtml = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Политика конфиденциальности — Остаток мерного товара</title>
+  <style>body{font-family:sans-serif;max-width:720px;margin:32px auto;padding:0 16px;line-height:1.6;color:#1e293b}h1{font-size:22px}</style>
+</head>
+<body>
+  <h1>Политика конфиденциальности</h1>
+  <p>Приложение «Ценник: Остаток мерного товара» работает локально на устройстве пользователя и не собирает, не хранит на сторонних серверах и не передаёт третьим лицам персональные данные.</p>
+  <p><strong>Доступ к микрофону:</strong> используется исключительно для голосового ввода параметров товара (артикула, размеров и цены) стандартными средствами устройства. Аудиозаписи не сохраняются и не передаются разработчику.</p>
+  <p><strong>Локальное хранилище:</strong> справочник артикулов и очередь печати сохраняются только в памяти вашего устройства.</p>
+</body>
+</html>`;
+
+                const icon192 = generateIconPngBytes(192);
+                const icon512 = generateIconPngBytes(512);
+
+                const zipBlob = buildZipBlob([
+                    { name: 'index.html', data: indexHtml },
+                    { name: 'manifest.json', data: manifestJson },
+                    { name: 'sw.js', data: swJs },
+                    { name: 'icon-192.png', data: icon192 },
+                    { name: 'icon-512.png', data: icon512 },
+                    { name: 'privacy.html', data: privacyHtml }
+                ]);
+
+                const url = URL.createObjectURL(zipBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'cennik_pwa_package.zip';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showToast('Архив cennik_pwa_package.zip готов для Netlify и PWABuilder!', 'success');
+            } catch (e) {
+                console.error(e);
+                showToast('Не удалось собрать архив', 'error');
+            }
+        }
+
+        // =========================================================================
+        // ГОЛОСОВОЙ ВВОД (WEB SPEECH API — RU-RU)
+        // =========================================================================
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const voiceSupportBadge = document.getElementById('voice-support-badge');
+        const voiceStatusBox = document.getElementById('voice-status-box');
+        const voiceStatusTitle = document.getElementById('voice-status-title');
+        const voiceStatusTranscript = document.getElementById('voice-status-transcript');
+
+        let recognition = null;
+        let activeVoiceMode = null;
+        let activeVoiceField = null;
+        let wizardStepIndex = 0;
+
+        const wizardSteps = [
+            { field: 'code', prompt: 'Шаг 1 из 4: Назовите 8 цифр артикула' },
+            { field: 'length', prompt: 'Шаг 2 из 4: Назовите длину (например: 1 и 17)' },
+            { field: 'width', prompt: 'Шаг 3 из 4: Назовите ширину (например: 3)' },
+            { field: 'price', prompt: 'Шаг 4 из 4: Назовите цену за квадратный метр' }
+        ];
+
+        if (!SpeechRecognition) {
+            voiceSupportBadge.textContent = 'Не поддерживается браузером';
+            voiceSupportBadge.className = 'text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-800';
+        }
+
+        function normalizeSpokenDecimal(str) {
+            let s = String(str || '').toLowerCase();
+            s = s.replace(/\s+(и|точка|запятая|целых|целая|метр|метра|метров)\s+/g, '.');
+            s = s.replace(/,/g, '.');
+            const m = s.match(/\d+(?:\.\d+)?/);
+            return m ? m[0] : '';
+        }
+
+        function extractCode(text) {
+            const compact = String(text || '').replace(/[\s\-]+/g, '');
+            const exact8 = compact.match(/\d{8}/);
+            if (exact8) return exact8[0];
+            const digitsOnly = compact.replace(/\D/g, '');
+            return digitsOnly.slice(0, 8);
+        }
+
+        function parseFullVoicePhrase(text) {
+            const lower = String(text || '').toLowerCase();
+            let updated = [];
+
+            const codeMatch = lower.match(/(?:артикул|код|номер)\s*([\d\s\-]{6,15})/);
+            if (codeMatch) {
+                const code = extractCode(codeMatch[1]);
+                if (code) {
+                    state.code = code;
+                    updated.push(`Артикул: ${code}`);
+                    if (code.length === 8) lookupInCatalog(code, false);
+                }
+            } else {
+                const any8 = extractCode(lower);
+                if (any8.length === 8) {
+                    state.code = any8;
+                    updated.push(`Артикул: ${any8}`);
+                    lookupInCatalog(any8, false);
+                }
+            }
+
+            const lenMatch = lower.match(/длин[ауы]\s*([\d.,]+(?:\s*(?:и|точка|запятая|целых|метр[а-я]*)\s*\d+)?)/);
+            if (lenMatch) {
+                const val = normalizeSpokenDecimal(lenMatch[1]);
+                if (val) {
+                    state.length = val;
+                    updated.push(`Длина: ${val}`);
+                }
+            }
+
+            const widMatch = lower.match(/ширин[ауы]\s*([\d.,]+(?:\s*(?:и|точка|запятая|целых|метр[а-я]*)\s*\d+)?)/);
+            if (widMatch) {
+                const val = normalizeSpokenDecimal(widMatch[1]);
+                if (val) {
+                    state.width = val;
+                    updated.push(`Ширина: ${val}`);
+                }
+            }
+
+            const priceMatch = lower.match(/(?:цена|стоит|стоимость|за\s*квадрат[а-я]*|за\s*метр)\s*(?:за\s*квадрат[а-я]*\s*метр\s*)?([\d\s.,]+)/);
+            if (priceMatch) {
+                const val = normalizeSpokenDecimal(priceMatch[1].replace(/\s+/g, ''));
+                if (val) {
+                    state.price = val;
+                    updated.push(`Цена: ${val}`);
+                }
+            }
+
+            const discMatch = lower.match(/скидк[ауи]\s*(\d+)/);
+            if (discMatch) {
+                state.discount = discMatch[1];
+                updated.push(`Скидка: ${discMatch[1]}%`);
+            }
+
+            if (updated.length > 0) {
+                syncInputsFromState();
+                updatePreview();
+                showToast(`Распознано: ${updated.join(', ')}`, 'success');
+            } else {
+                showToast(`Не удалось разобрать фразу: «${text}»`, 'warning');
+            }
+        }
+
+        function applySingleVoiceField(field, text) {
+            if (field === 'code') {
+                const code = extractCode(text);
+                if (code) {
+                    state.code = code;
+                    showToast(`Артикул: ${code}`, 'success');
+                    if (code.length === 8) lookupInCatalog(code, true);
+                }
+            } else if (field === 'name') {
+                const clean = String(text || '').trim();
+                if (clean) {
+                    state.name = clean.charAt(0).toUpperCase() + clean.slice(1);
+                    showToast(`Наименование: ${state.name}`, 'success');
+                }
+            } else if (field === 'length' || field === 'width' || field === 'price') {
+                const val = normalizeSpokenDecimal(text);
+                if (val) {
+                    state[field] = val;
+                    const labels = { length: 'Длина', width: 'Ширина', price: 'Цена за м²' };
+                    showToast(`${labels[field]}: ${val}`, 'success');
+                }
+            }
+            syncInputsFromState();
+            updatePreview();
+        }
+
+        function stopVoiceRecognition() {
+            activeVoiceMode = null;
+            activeVoiceField = null;
+            if (recognition) {
+                try { recognition.abort(); } catch (e) {}
+            }
+            voiceStatusBox.classList.add('hidden');
+            document.querySelectorAll('.mic-listening').forEach(el => el.classList.remove('mic-listening'));
+        }
+
+        function startVoiceRecognition(mode, field = null, triggerBtn = null) {
+            if (!SpeechRecognition) {
+                showToast('Голосовой ввод работает в Chrome, Яндекс Браузере и Edge', 'warning');
+                return;
+            }
+            stopVoiceRecognition();
+
+            activeVoiceMode = mode;
+            activeVoiceField = field;
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'ru-RU';
+            recognition.interimResults = true;
+            recognition.maxAlternatives = 1;
+
+            if (triggerBtn) triggerBtn.classList.add('mic-listening');
+            voiceStatusBox.classList.remove('hidden');
+
+            if (mode === 'all') {
+                voiceStatusTitle.textContent = 'Диктуйте всё сразу...';
+                voiceStatusTranscript.textContent = 'Например: «Артикул 89441399, длина 1 и 17, ширина 3, цена 915»';
+            } else if (mode === 'wizard') {
+                voiceStatusTitle.textContent = wizardSteps[wizardStepIndex].prompt;
+                voiceStatusTranscript.textContent = 'Говорите чётко...';
+            } else {
+                voiceStatusTitle.textContent = 'Слушаю значение поля...';
+                voiceStatusTranscript.textContent = 'Говорите...';
+            }
+
+            recognition.onresult = (event) => {
+                let transcript = '';
+                let isFinal = false;
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                    if (event.results[i].isFinal) isFinal = true;
+                }
+                voiceStatusTranscript.textContent = `«${transcript}»`;
+
+                if (isFinal) {
+                    const currentMode = activeVoiceMode;
+                    const currentField = activeVoiceField;
+
+                    if (currentMode === 'all') {
+                        parseFullVoicePhrase(transcript);
+                        stopVoiceRecognition();
+                    } else if (currentMode === 'field') {
+                        applySingleVoiceField(currentField, transcript);
+                        stopVoiceRecognition();
+                    } else if (currentMode === 'wizard') {
+                        applySingleVoiceField(wizardSteps[wizardStepIndex].field, transcript);
+                        wizardStepIndex++;
+                        if (wizardStepIndex < wizardSteps.length) {
+                            setTimeout(() => {
+                                if (activeVoiceMode === 'wizard') {
+                                    startVoiceRecognition('wizard');
+                                }
+                            }, 400);
+                        } else {
+                            showToast('Пошаговая диктовка завершена!', 'success');
+                            stopVoiceRecognition();
+                        }
+                    }
+                }
+            };
+
+            recognition.onerror = (event) => {
+                if (event.error !== 'aborted') {
+                    showToast('Ошибка микрофона: проверьте разрешение в браузере', 'error');
+                }
+                stopVoiceRecognition();
+            };
+
+            recognition.onend = () => {
+                if (activeVoiceMode !== 'wizard') {
+                    voiceStatusBox.classList.add('hidden');
+                    document.querySelectorAll('.mic-listening').forEach(el => el.classList.remove('mic-listening'));
+                }
+            };
+
+            try {
+                recognition.start();
+            } catch (e) {
+                showToast('Не удалось запустить микрофон', 'error');
+                stopVoiceRecognition();
+            }
+        }
+
+        // =========================================================================
+        // ОБРАБОТЧИКИ СОБЫТИЙ
+        // =========================================================================
+        inputs.code.addEventListener('input', (e) => {
+            const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
+            e.target.value = digits;
+            state.code = digits;
+            updateCodeCounter();
+            if (digits.length === 8) {
+                lookupInCatalog(digits, true);
+            } else {
+                catalogMatchBadge.classList.add('hidden');
+            }
+            updatePreview();
+        });
+
+        ['name', 'length', 'width', 'price', 'discount', 'pin'].forEach((key) => {
+            inputs[key].addEventListener('input', (e) => {
+                state[key] = e.target.value;
+                if (key === 'discount') saveToStorage();
+                updatePreview();
+            });
+        });
+
+        document.querySelectorAll('.quick-width-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.width = btn.dataset.quickWidth;
+                inputs.width.value = state.width;
+                updatePreview();
+            });
+        });
+
+        document.getElementById('btn-open-catalog').addEventListener('click', () => {
+            renderCatalogUI();
+            catalogModal.classList.remove('hidden');
+        });
+
+        document.getElementById('btn-close-catalog').addEventListener('click', () => {
+            catalogModal.classList.add('hidden');
+        });
+
+        catalogModal.addEventListener('click', (e) => {
+            if (e.target === catalogModal) catalogModal.classList.add('hidden');
+        });
+
+        document.getElementById('btn-import-catalog').addEventListener('click', () => {
+            const textarea = document.getElementById('catalog-import-text');
+            if (!textarea.value.trim()) {
+                showToast('Сначала вставьте строки из Excel', 'warning');
+                return;
+            }
+            if (importCatalogText(textarea.value) > 0) {
+                textarea.value = '';
+            }
+        });
+
+        document.getElementById('catalog-file-input').addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                importCatalogText(reader.result);
+                e.target.value = '';
+            };
+            reader.onerror = () => showToast('Не удалось прочитать файл', 'error');
+            reader.readAsText(file, 'UTF-8');
+        });
+
+        document.getElementById('btn-clear-catalog').addEventListener('click', () => {
+            state.catalog = {};
+            saveToStorage();
+            renderCatalogUI();
+            catalogMatchBadge.classList.add('hidden');
+            showToast('База артикулов очищена', 'info');
+        });
+
+        document.getElementById('btn-voice-all').addEventListener('click', (e) => {
+            startVoiceRecognition('all', null, e.currentTarget);
+        });
+
+        document.getElementById('btn-voice-wizard').addEventListener('click', () => {
+            wizardStepIndex = 0;
+            startVoiceRecognition('wizard');
+        });
+
+        document.getElementById('btn-voice-stop').addEventListener('click', stopVoiceRecognition);
+
+        document.querySelectorAll('.voice-field-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                startVoiceRecognition('field', btn.dataset.voiceField, btn);
+            });
+        });
+
+        document.getElementById('btn-add-queue').addEventListener('click', () => {
+            const calc = calculateTagValues(state);
+            if (!state.code && !calc.area) {
+                showToast('Сначала заполните артикул и размеры', 'warning');
+                return;
+            }
+            rememberInCatalog(state.code, state.name, state.price);
+            state.queue.push({
+                code: state.code,
+                length: state.length,
+                width: state.width,
+                price: state.price,
+                discount: state.discount,
+                name: state.name,
+                pin: state.pin
+            });
+            saveToStorage();
+            renderQueue();
+            showToast(`Добавлено на лист (всего: ${state.queue.length})`, 'success');
+        });
+
+        document.getElementById('btn-reset-form').addEventListener('click', () => {
+            state.code = '';
+            state.name = '';
+            state.length = '';
+            state.width = '';
+            state.price = '';
+            state.pin = '';
+            catalogMatchBadge.classList.add('hidden');
+            syncInputsFromState();
+            updatePreview();
+        });
+
+        btnClearQueue.addEventListener('click', () => {
+            state.queue = [];
+            saveToStorage();
+            renderQueue();
+            showToast('Лист печати очищен', 'info');
+        });
+
+        // Шапка: печать, PNG, скачать HTML и скачать PWA-пакет (.zip)
+        document.getElementById('btn-print')?.addEventListener('click', triggerPrint);
+        document.getElementById('btn-export-png')?.addEventListener('click', exportSheetAsPng);
+        document.getElementById('btn-download-app')?.addEventListener('click', downloadStandaloneHtml);
+        document.getElementById('btn-download-pwa')?.addEventListener('click', downloadPwaZipPackage);
+
+        // =========================================================================
+        // ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
+        // =========================================================================
+        loadFromStorage();
+        syncInputsFromState();
+        renderCatalogUI();
+        if (state.code.length === 8) lookupInCatalog(state.code, false);
+        updatePreview();
+        renderQueue();
+    </script>
+
+<script id="pwa-sw-register">if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); }); }</script></body></html>
