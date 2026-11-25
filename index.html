@@ -74,7 +74,7 @@
             color: #ffffff !important;
         }
 
-        /* Правила печати: 4 максимально крупных ценника А6 (2×2) на весь лист А4 */
+/* Правила печати: 4 крупных ценника А6 (2×2) на весь лист А4 */
         @media print {
             @page {
                 size: A4 portrait;
@@ -129,27 +129,28 @@
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
-                padding: 3.5mm !important;
+                padding: 2.5mm 3mm !important;
             }
-            /* Максимально крупные шрифты для печати */
-            .tag-header-bar { padding: 3.5mm 4mm !important; }
-            .tag-header-bar .text-\[9px\] { font-size: 9.5pt !important; }
-            .tag-header-bar .text-\[13px\] { font-size: 14pt !important; }
-            .tag-discount-pill { font-size: 24pt !important; padding: 2mm 3.5mm !important; }
+            /* Шрифты и отступы для идеальной посадки */
+            .tag-header-bar { padding: 3mm 3.5mm !important; }
+            .tag-header-bar .text-\[9px\] { font-size: 9pt !important; }
+            .tag-header-bar .text-\[13px\] { font-size: 13.5pt !important; }
+            .tag-discount-pill { font-size: 22pt !important; padding: 2mm 3mm !important; }
 
-            .price-tag-card > div:nth-child(2) { font-size: 10.5pt !important; padding: 2mm !important; }
+            .price-tag-card > div:nth-child(2) { font-size: 10pt !important; padding: 1.5mm 2mm !important; }
 
-            .price-tag-card .text-\[17px\] { font-size: 22pt !important; } /* Артикул */
-            .price-tag-card .text-\[11px\] { font-size: 12pt !important; line-height: 1.2 !important; } /* Наименование */
-            .price-tag-card .text-\[8\.5px\] { font-size: 9pt !important; }
-            .price-tag-card .text-\[13px\] { font-size: 15pt !important; } /* Длина, ширина, площадь, за 1 м² */
-            .price-tag-card .text-\[16px\] { font-size: 18pt !important; } /* Старая цена и PIN */
-            .price-tag-card .text-\[9\.5px\] { font-size: 10.5pt !important; }
-            .tag-price-hero .text-\[28px\] { font-size: 38pt !important; } /* Главная цена со скидкой */
-            .tag-price-hero .text-\[18px\] { font-size: 22pt !important; }
-            .tag-pin-box { height: 14mm !important; }
-            .tag-footer-bar { font-size: 12pt !important; padding: 3mm !important; }
+            .price-tag-card .text-\[17px\] { font-size: 14.5pt !important; letter-spacing: 0 !important; } /* Артикул строго в рамке */
+            .price-tag-card .text-\[11px\] { font-size: 11pt !important; line-height: 1.2 !important; } /* Наименование */
+            .price-tag-card .text-\[8\.5px\] { font-size: 8.5pt !important; }
+            .price-tag-card .text-\[13px\] { font-size: 14pt !important; } /* Длина, ширина, площадь, за 1 м² */
+            .price-tag-card .text-\[16px\] { font-size: 14pt !important; white-space: nowrap !important; } /* Старая цена в одну строку */
+            .price-tag-card .text-\[9\.5px\] { font-size: 10pt !important; }
+            .tag-price-hero .text-\[28px\] { font-size: 36pt !important; } /* Главная цена со скидкой */
+            .tag-price-hero .text-\[18px\] { font-size: 20pt !important; }
+            .tag-pin-box { height: 11mm !important; }
+            .tag-footer-bar { font-size: 11pt !important; padding: 2.5mm 3mm !important; }
         }
+
 
         
     </style>
